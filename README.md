@@ -1,2 +1,2 @@
-# urlwatcherbot
-Telegram chatbot para verificação de URLs e arquivos
+# URL watcher bot
+Telegram bot for verifying malicious URLs and files
