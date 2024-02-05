@@ -25,7 +25,7 @@ Este trabalho propõe a criação de um chatbot para verificação de URLs compa
 - **Cuckoo Sandbox**
 - **Virus Total**
 
-Dependencias:
+### Dependencias:
 - **express**
 - **mongoose**
 - **axios**
@@ -34,7 +34,6 @@ Dependencias:
 - **body-parser**
 
 ## Estrutura do projeto
-
 
 ```
 App
@@ -50,15 +49,15 @@ App
 
 ```json
 {
-  "_id": new ObjectId('Number'),
+  "_id": Number,
   "url": String,
-  "analysisDate": Date,
-  "analysisStatus": 'Completed',
+  "analysisDate":Date,
+  "analysisStatus": "Completed",
   "maliciousRate": 50,
   "suspiciousRate": 30,
   "harmlessRate": 10
 }
-
+```
 
 ## Instruções de uso
 
