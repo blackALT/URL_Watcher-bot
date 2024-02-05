@@ -25,7 +25,7 @@ Este trabalho propõe a criação de um chatbot para verificação de URLs compa
 - **Cuckoo Sandbox**
 - **Virus Total**
 
-### Dependencias:
+## Dependencias:
 - **express**
 - **mongoose**
 - **axios**
@@ -49,22 +49,20 @@ App
 
 ```json
 {
-  "_id": Number,
-  "url": String,
-  "analysisDate":Date,
-  "analysisStatus": "Completed",
-  "maliciousRate": 50,
-  "suspiciousRate": 30,
-  "harmlessRate": 10
+  "_id": "Number",
+  "url": "String",
+  "analysisDate": "Date",
+  "analysisStatus": "String",
+  "maliciousRate": "Number",
+  "suspiciousRate": "Number",
+  "harmlessRate": "Number"
 }
 ```
 
 ## Instruções de uso
-
 Visite o bot em https://t.me/EnvWatcherBot e navegue pelos comandos disponíveis.
 
 ## Para colaborar com este projeto
-
 - *Instalação*
 
 1. Faça um Fork desse repositório para seu GitHub;
@@ -92,20 +90,20 @@ npm start (use o nodemon se preferir)
 
 ### Endpoints
 
-# Obter urls cadastradas (filtro por período)
+#### Obter urls cadastradas (filtro por período)
 
 ```
 router.get("/urls", controller.getURL);
 ```
 
-# Cadastrar urls (Solicite uma chave JWT ao desenvolvedor do projeto @blackALT)
+#### Cadastrar urls (Solicite uma chave JWT ao desenvolvedor do projeto @blackALT)
 
 Apenas via Postman
 ```
 router.post("/urls", controller.postURLweb);
 ```
 
-# Acesso ao Elasticsearch/Kibana (Avançado)
+#### Acesso ao Elasticsearch/Kibana (Avançado)
 
 ** Em construção **
 
