@@ -1,14 +1,71 @@
 const datadb = require('../models/appModel');
+var moment = require('moment');
 
-const getURL = async () => {
+async function getAll(req, res) {
+    var data;
     try {
-        return await datadb.find({});
-    } catch (error) {
-        console.log(error);
-        throw error;
+        data = await datadb.find({});
+        return res.status(200).send(data)
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+async function getDataBaseURL(req, res) {
+    var data;
+    var url = req.query.url
+    console.log("URL informada", url)
+    try {
+        if (!url) {
+            return res.status(200).send("Informe uma URL")
+        }
+        var data = await datadb.find({ url });
+        if (data) {
+            return res.status(200).send(data)
+        }
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+async function getLatestDaily(req, res) {
+    var dailyHours = moment().subtract(24, 'hour');
+    try {
+        data = await datadb.find({ analysisDate: { $gte: dailyHours } });
+        console.log(data)
+        return res.status(200).send(data)
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+async function getLatestHour(req, res) {
+    var dailyHours = moment().subtract(1, 'hour');
+    try {
+        data = await datadb.find({ analysisDate: { $gte: dailyHours } });
+        console.log(data)
+        return res.status(200).send(data)
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+async function postURL(req, res) {
+    console.log(req.body);
+    try {
+        let novaUrl = new datadb(req.body);
+        novaUrl.save()
+            .then(res.status(201).send(novaUrl.toJSON()))
+    } catch (err) {
+        console.log(err);
+        res.status(500).send({ message: err.message })
     }
 }
 
 module.exports = {
-    getURL
+    getDataBaseURL,
+    getAll,
+    getLatestDaily,
+    getLatestHour,
+    postURL
 }

@@ -48,14 +48,15 @@ bot.on(message('text'), async (content, next) => {
     console.log("Depois de declarar a var", url)
     const response = await getDataBaseURL(url)
     console.log("Depois de receber a resposta", response)
+    console.log(typeof (response))
 
     content.reply(`
             Resultado:
-            🔍 URL consultada: ${response}
+            🔗 *URL consultada:* ${url}
 
-            🔴 Malicioso: ${response[1].maliciousRate} %
-            🟡 Suspeito: ${response[1].suspiciousRate} %
-            🔵 Inofensivo: ${response[1].harmlessRate} %
+            🔴 #Malicioso: ${maliciousRate} %
+            🟡 #Suspeito: ${response} %
+            🔵 #Inofensivo: ${response} %
 
             
         `);
