@@ -8,10 +8,9 @@ const getDataBaseURL = async (url) => {
         } else {
             var data = await datadb.find({});
         }
-        if (data) {
-            console.log("Tem data", data)
-            return data
-        }
+        console.log("Tem data", data)
+        return data
+
     } catch (error) {
         console.log(error);
     }
