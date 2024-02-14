@@ -17,6 +17,14 @@ function menuPrincipal() {
     return mainMenu;
 }
 
+function docButton() {
+    const docButton = [
+        Markup.button.callback('🔗 API Documentation', 'https://app.swaggerhub.com/home'),
+        Markup.button.callback('🔗 GitHub Project', 'https://github.com/blackALT/URL_Watcher-bot/blob/main/README.md  ')
+    ]
+    return docButton
+}
+
 function startMenu() {
     const mainMenu = [
         Markup.button.callback('🏡 Iniciar', 'start')
@@ -33,8 +41,33 @@ function retornoBuscaError() {
 
 }
 
+function menuDicas() {
+    const mainMenu = [[
+        Markup.button.callback('🔴 Senhas', 'senhas'),
+        Markup.button.callback('🟠 Software', 'software')
+    ], [
+
+        Markup.button.callback('🔵 Links e anexos suspeitos', 'links'),
+        Markup.button.callback('🟡 Redes Sociais', 'social'),
+
+    ], [
+        Markup.button.callback('🟢 Wi-Fi público', 'wifi'),
+        Markup.button.callback('🟣 Mobile', 'mobile')
+    ], [
+        Markup.button.callback('⚫️ Golpes online', 'golpes'),
+        Markup.button.callback('⚪️ Eduque-se', 'educacao')
+    ],
+    [
+        Markup.button.callback('🏡 Menu Principal', 'principal')]
+    ]
+
+    return mainMenu;
+}
+
 module.exports = {
     menuPrincipal,
     startMenu,
-    retornoBuscaError
+    retornoBuscaError,
+    menuDicas,
+    docButton
 }
