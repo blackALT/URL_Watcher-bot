@@ -29,11 +29,16 @@ async function getDataBaseURL(req, res) {
 }
 
 async function getLatestDaily(req, res) {
-    var dailyHours = moment().subtract(24, 'hour');
+    var dailyHours = moment().subtract(72, 'hour');
     try {
         data = await datadb.find({ analysisDate: { $gte: dailyHours } });
         console.log(data)
-        return res.status(200).send(data)
+        const urls = []
+        for (let i in data) {
+            urls.push(data[i].url)
+            console.log(i)
+        }
+        return res.status(200).send(urls)
     } catch (err) {
         console.log(err);
     }
@@ -44,7 +49,12 @@ async function getLatestHour(req, res) {
     try {
         data = await datadb.find({ analysisDate: { $gte: dailyHours } });
         console.log(data)
-        return res.status(200).send(data)
+        const urls = []
+        for (let i in data) {
+            urls.push(data[i].url)
+            console.log(i)
+        }
+        return res.status(200).send(urls)
     } catch (err) {
         console.log(err);
     }

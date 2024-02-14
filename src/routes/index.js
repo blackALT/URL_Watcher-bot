@@ -6,7 +6,7 @@ router.get("/", function (req, res) {
         title: "URL Watcher Bot - API",
         version: "1.0.1 - Novo BOT",
         developer: "blackALT",
-        documentation: "Go to /api/v3/docs to see all endpoint available"
+        documentation: "Go to https://app.swaggerhub.com/home to see all endpoint available"
     })
 })
 
