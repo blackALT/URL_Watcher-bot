@@ -1,6 +1,15 @@
 const datadb = require('../models/appModel');
 var moment = require('moment');
 
+
+/**
+ * @description Web API - returns all data in MongoDB 
+ * @function
+ * @param {Object} req Express request
+ * @param {Object} res Express response
+ * @returns {Object}
+ */
+
 async function getAll(req, res) {
     var data;
     try {
@@ -10,6 +19,15 @@ async function getAll(req, res) {
         console.log(err);
     }
 }
+
+/**
+ * @description Web API - search a urls in MongoDB 
+ * @function
+ * @param {Object} req Express request
+ * @param {Object} res Express response
+ * @param req.query.url {String}
+ * @returns {Object}
+ */
 
 async function getDataBaseURL(req, res) {
     var data;
@@ -28,6 +46,14 @@ async function getDataBaseURL(req, res) {
     }
 }
 
+/**
+ * @description Web API - returns urls registered in the past day  
+ * @function
+ * @param {Object} req Express request
+ * @param {Object} res Express response
+ * @returns {undefined}
+ */
+
 async function getLatestDaily(req, res) {
     var dailyHours = moment().subtract(72, 'hour');
     try {
@@ -44,6 +70,14 @@ async function getLatestDaily(req, res) {
     }
 }
 
+/**
+ * @description Web API - returns urls registered in the past hour  
+ * @function
+ * @param {Object} req Express request
+ * @param {Object} res Express response
+ * @returns {undefined}
+ */
+
 async function getLatestHour(req, res) {
     var dailyHours = moment().subtract(1, 'hour');
     try {
@@ -59,6 +93,15 @@ async function getLatestHour(req, res) {
         console.log(err);
     }
 }
+
+/**
+ * @description Web API - send urls to be registered in MongoDB 
+ * @function
+ * @param {Object} req Express request
+ * @param {Object} res Express response
+ * @param req.body {Object} JSON payload
+ * @returns {undefined}
+ */
 
 async function postURL(req, res) {
     console.log(req.body);
