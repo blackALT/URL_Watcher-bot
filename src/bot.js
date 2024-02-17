@@ -5,12 +5,62 @@
 // ===============================================================
 
 require('dotenv').config({ silent: true, allowEmptyValues: true })
-const { TELEGRAM_TOKEN } = require('./.env');
+const { TELEGRAM_TOKEN } = require('../.env');
 const { Telegraf, Markup } = require('telegraf');
 const { message } = require('telegraf/filters');
 const { menuPrincipal, startMenu, retornoBuscaError, docButton, menuDicas, webAPIData } = require('./views/buttons');
-const { getDataBaseURL, getLatestHour, getLatestDay } = require('./controller/botController');
+const { getDataBaseURL, getLatestHour, getLatestDay, postAnalisysVT, getAnalysisVT } = require('./controller/botController');
 const bot = new Telegraf(TELEGRAM_TOKEN);
+
+/**
+ * Busca VT
+ */
+
+bot.action('new', async (content, next) => {
+    content.reply('🔍 Digite a URL ...')
+    next();
+    let url = content.message.text;
+    const encodedParams = new URLSearchParams();
+    encodedParams.set('url', url);
+    const idAnalise = await postAnalisysVT(encodedParams)
+    return idAnalise
+})
+
+//Send id Analyse to VT
+bot.action('new', async (content, next) => {
+    //stopEaring = false;
+    //content.reply('🔍 Digite a URL ...')
+    //next();
+
+    idAnalise = "u-114fb86b9b4e868f8bac2249eb5c444b545f0240c3dadd23312a0bc1622b5488-1708051832"
+
+    const response = await getAnalysisVT(idAnalise);
+    console.log("estou na resposta", response);
+
+    /*let status_analise = response.data.data.attributes.status;
+    let malicioso = response.data.data.attributes.stats.malicious
+
+    console.log("Status da Análise: ", status_analise, "Malicioso: ", malicioso);
+
+    content.reply(`
+                *Resultado da busca*
+
+                🔗 *URL:* ${response.data.meta.url_info.url}
+    
+                *Resultado:*
+                ══════════════    
+                🔴 *Malicioso:* ${response.data.data.attributes.stats.malicious} %
+                
+                🟡 *Suspeito:* ${response.data.data.attributes.stats.suspicious} %
+                
+                🔵 *Inofensivo:* ${response.data.data.attributes.stats.harmless} %                
+                ══════════════
+                
+                📌 Fique atento aos golpes na Internet!
+                `, { parse_mode: 'Markdown' });
+            */
+})
+
 
 /**
  * Mensagens
@@ -22,12 +72,12 @@ const { contactMessage, helpMessage, wellcomeMessage, urlNotFound } = require('.
 bot.start(async content => {
     const from = content.update.message.from
     console.log(from)
-    content.reply(`Olá! ${from.first_name} (${from.username})`)
+    content.reply(`Olá! ${from.first_name} (${from.username}`)
     content.reply(wellcomeMessage, Markup.inlineKeyboard(menuPrincipal()))
 })
 
 /**
- * Busca últimas URLs analisadas
+ * Busca últimas URLs analisadas 
  */
 
 bot.action('data', async (content) => {
@@ -67,40 +117,44 @@ bot.action('data', async (content) => {
  */
 
 bot.action('search', async (content, next) => {
+    stopEaring = false;
     content.reply('🔍 Digite a URL ...')
     next()
     bot.on(message('text'), async (content) => {
-        let url = content.message.text;
-        console.log(url)
+        if (!stopEaring) {
+            let url = content.message.text;
+            console.log(url)
 
-        const response = await getDataBaseURL(url)
-        console.log(response)
+            const response = await getDataBaseURL(url)
+            console.log(response)
 
-        if (response.length === 0) {
-            content.reply(urlNotFound, Markup.inlineKeyboard(retornoBuscaError()))
-        } else {
-            for (let i in response) {
-                content.reply(`
+            if (response.length === 0) {
+                content.reply(urlNotFound, Markup.inlineKeyboard(retornoBuscaError()))
+            } else {
+                for (let i in response) {
+                    content.reply(`
                 *Resultado da busca*
 
                 🔗 *URL:* ${response[i].url}
     
                 *Resultado:*
                 ══════════════    
-                🔴 *Malicioso:* ${response[i].maliciousRate} %
+                🔴 *Malicioso:* ${response[i].maliciousRate}
                 
-                🟡 *Suspeito:* ${response[i].suspiciousRate} %
+                🟡 *Suspeito:* ${response[i].suspiciousRate}
                 
-                🔵 *Inofensivo:* ${response[i].harmlessRate} %                
+                🔵 *Inofensivo:* ${response[i].harmlessRate}                
                 ══════════════
                 
                 📌 Fique atento aos golpes na Internet!
                 `, { parse_mode: 'Markdown' });
 
+                }
+                content.reply('Voltar ao menu principal 🏡', Markup.inlineKeyboard(startMenu()))
             }
-            content.reply('Voltar ao menu principal 🏡', Markup.inlineKeyboard(startMenu()))
+            stopEaring = true;
         }
-    })
+    });
 })
 
 /**

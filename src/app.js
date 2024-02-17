@@ -5,7 +5,7 @@
 // ===============================================================
 
 require('dotenv').config({ silent: true, allowEmptyValues: true })
-const { DATABASE_URL } = require('./.env');
+const { DATABASE_URL } = require('../.env');
 
 const express = require("express");
 const bodyParser = require("body-parser");

@@ -1,5 +1,4 @@
 const { mongoose } = require('mongoose');
-
 var todayTime = new Date(Date.now());
 
 const urlSchema = new mongoose.Schema({
@@ -28,7 +27,8 @@ const urlSchema = new mongoose.Schema({
 }, {
     versionKey: false
 })
-
 const dataURL = mongoose.model('collectionapps', urlSchema)
 
 module.exports = dataURL
+
+

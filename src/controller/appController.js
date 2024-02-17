@@ -103,12 +103,13 @@ async function getLatestHour(req, res) {
  * @returns {undefined}
  */
 
-async function postURL(req, res) {
+async function postURL(req, res, next) {
     console.log(req.body);
     try {
         let novaUrl = new datadb(req.body);
         novaUrl.save()
             .then(res.status(201).send(novaUrl.toJSON()))
+        next();
     } catch (err) {
         console.log(err);
         res.status(500).send({ message: err.message })

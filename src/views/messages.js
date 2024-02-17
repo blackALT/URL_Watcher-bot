@@ -25,6 +25,7 @@ AJUDA
 
 /start inicia uma 
 
+Como interpretar os resultados
  
  `
 
