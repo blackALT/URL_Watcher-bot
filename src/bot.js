@@ -10,64 +10,12 @@ const { Telegraf, Markup } = require('telegraf');
 const { message } = require('telegraf/filters');
 const { menuPrincipal, startMenu, retornoBuscaError, docButton, menuDicas, webAPIData } = require('./views/buttons');
 const { getDataBaseURL, getLatestHour, getLatestDay, postAnalisysVT, getAnalysisVT } = require('./controller/botController');
+const { contactMessage, helpMessage, wellcomeMessage, urlNotFound } = require('./views/messages.js');
 const bot = new Telegraf(TELEGRAM_TOKEN);
 
 /**
- * Busca VT
+ * Início
  */
-
-bot.action('new', async (content, next) => {
-    content.reply('🔍 Digite a URL ...')
-    next();
-    let url = content.message.text;
-    const encodedParams = new URLSearchParams();
-    encodedParams.set('url', url);
-    const idAnalise = await postAnalisysVT(encodedParams)
-    return idAnalise
-})
-
-//Send id Analyse to VT
-bot.action('new', async (content, next) => {
-    //stopEaring = false;
-    //content.reply('🔍 Digite a URL ...')
-    //next();
-
-    idAnalise = "u-114fb86b9b4e868f8bac2249eb5c444b545f0240c3dadd23312a0bc1622b5488-1708051832"
-
-    const response = await getAnalysisVT(idAnalise);
-    console.log("estou na resposta", response);
-
-    /*let status_analise = response.data.data.attributes.status;
-    let malicioso = response.data.data.attributes.stats.malicious
-
-    console.log("Status da Análise: ", status_analise, "Malicioso: ", malicioso);
-
-    content.reply(`
-                *Resultado da busca*
-
-                🔗 *URL:* ${response.data.meta.url_info.url}
-    
-                *Resultado:*
-                ══════════════    
-                🔴 *Malicioso:* ${response.data.data.attributes.stats.malicious} %
-                
-                🟡 *Suspeito:* ${response.data.data.attributes.stats.suspicious} %
-                
-                🔵 *Inofensivo:* ${response.data.data.attributes.stats.harmless} %                
-                ══════════════
-                
-                📌 Fique atento aos golpes na Internet!
-                `, { parse_mode: 'Markdown' });
-            */
-})
-
-
-/**
- * Mensagens
- */
-
-const { contactMessage, helpMessage, wellcomeMessage, urlNotFound } = require('./views/messages.js');
-
 
 bot.start(async content => {
     const from = content.update.message.from
@@ -77,39 +25,49 @@ bot.start(async content => {
 })
 
 /**
- * Busca últimas URLs analisadas 
+ * Busca VirusTotal
  */
 
-bot.action('data', async (content) => {
-    try {
-        const countHours = await getLatestHour();
-        const urlsHour = []
-        for (let i in countHours) {
-            urlsHour.push(countHours[i].url)
-        }
+bot.action('new', async (content, next) => {
+    stopEaring = false;
+    if (!stopEaring) {
+        content.reply('🔍 Digite a URL ...')
 
-        const countDays = await getLatestDay();
-        const urlsDaily = []
-        for (let j in countDays) {
-            urlsDaily.push(countDays[j].url)
-        }
+        let url = content.message.text;
 
-        content.reply(`
-        *Dados:*
+        const encodedParams = new URLSearchParams();
+        encodedParams.set('url', url);
 
-            🔗 *URLs analisadas na última hora:*
-            Quantidade: *${urlsHour.length}*
-
-            🔗 *URLs analisadas no ultimo dia:*
-            Quantidade: *${urlsDaily.length}*       
-                  
-            `, { parse_mode: 'Markdown' });
-        content.reply("Acesse a API via Web para mais detalhes", Markup.inlineKeyboard(webAPIData()))
-
-    } catch (error) {
-        console.log(error);
-        content.reply("Sem análises!", Markup.inlineKeyboard(startMenu()))
+        stopEaring = true;
+        next();
     }
+    // 1st request to VT
+    const idAnalise = await postAnalisysVT(encodedParams)
+
+    // 2nd request to VT
+    const response = await getAnalysisVT(idAnalise);
+    const maliciousRate = response.data.data.attributes.stats.malicious;
+    const url = response.data.meta.url_info.url;
+    const suspicious = response.data.data.attributes.stats.suspicious;
+    const harmless = response.data.data.attributes.stats.harmless;
+
+    content.reply(`
+                *Resultado da busca*
+
+                🔗 *URL:* ${url}
+    
+                *Resultado:*
+                ══════════════    
+                🔴 *Malicioso:* ${maliciousRate}
+                
+                🟡 *Suspeito:* ${suspicious}
+                
+                🔵 *Inofensivo:* ${harmless}               
+                ══════════════
+                
+                📌 Fique atento aos golpes na Internet!
+                `, { parse_mode: 'Markdown' });
+
 })
 
 /**
@@ -155,6 +113,42 @@ bot.action('search', async (content, next) => {
             stopEaring = true;
         }
     });
+})
+
+/**
+ * Busca últimas URLs analisadas 
+ */
+
+bot.action('data', async (content) => {
+    try {
+        const countHours = await getLatestHour();
+        const urlsHour = []
+        for (let i in countHours) {
+            urlsHour.push(countHours[i].url)
+        }
+
+        const countDays = await getLatestDay();
+        const urlsDaily = []
+        for (let j in countDays) {
+            urlsDaily.push(countDays[j].url)
+        }
+
+        content.reply(`
+        *Dados:*
+
+            🔗 *URLs analisadas na última hora:*
+            Quantidade: *${urlsHour.length}*
+
+            🔗 *URLs analisadas no ultimo dia:*
+            Quantidade: *${urlsDaily.length}*       
+                  
+            `, { parse_mode: 'Markdown' });
+        content.reply("Acesse a API via Web para mais detalhes", Markup.inlineKeyboard(webAPIData()))
+
+    } catch (error) {
+        console.log(error);
+        content.reply("Sem análises!", Markup.inlineKeyboard(startMenu()))
+    }
 })
 
 /**
@@ -222,19 +216,9 @@ bot.action('backup', async (content, next) => {
     next();
 })
 
-
 bot.action('contact', async (content, next) => {
     content.reply(contactMessage, Markup.inlineKeyboard(startMenu()))
     next();
-})
-
-/**
- * Sair
- */
-
-bot.action('quit', async (content) => {
-    content.reply('Volte sempre!', Markup.inlineKeyboard(startMenu()))
-    process.once('SIGINT', () => bot.stop('SIGINT'))
 })
 
 /**
