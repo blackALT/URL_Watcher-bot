@@ -9,7 +9,7 @@ const { TELEGRAM_TOKEN } = require('../.env');
 const { Telegraf, Markup } = require('telegraf');
 const { message } = require('telegraf/filters');
 const { menuPrincipal, startMenu, retornoBuscaError, docButton, menuDicas, webAPIData } = require('./views/buttons');
-const { getDataBaseURL, getLatestHour, getLatestDay, postAnalisysVT, getAnalysisVT } = require('./controller/botController');
+const { postFromBot, getDataBaseURL, getLatestHour, getLatestDay, postAnalysisVT, getAnalysisVT } = require('./controller/botController');
 const { contactMessage, helpMessage, wellcomeMessage, urlNotFound } = require('./views/messages.js');
 const bot = new Telegraf(TELEGRAM_TOKEN);
 
@@ -22,52 +22,6 @@ bot.start(async content => {
     console.log(from)
     content.reply(`Olá! ${from.first_name} (${from.username}`)
     content.reply(wellcomeMessage, Markup.inlineKeyboard(menuPrincipal()))
-})
-
-/**
- * Busca VirusTotal
- */
-
-bot.action('new', async (content, next) => {
-    stopEaring = false;
-    if (!stopEaring) {
-        content.reply('🔍 Digite a URL ...')
-
-        let url = content.message.text;
-
-        const encodedParams = new URLSearchParams();
-        encodedParams.set('url', url);
-
-        stopEaring = true;
-        next();
-    }
-    // 1st request to VT
-    const idAnalise = await postAnalisysVT(encodedParams)
-
-    // 2nd request to VT
-    const response = await getAnalysisVT(idAnalise);
-    const maliciousRate = response.data.data.attributes.stats.malicious;
-    const url = response.data.meta.url_info.url;
-    const suspicious = response.data.data.attributes.stats.suspicious;
-    const harmless = response.data.data.attributes.stats.harmless;
-
-    content.reply(`
-                *Resultado da busca*
-
-                🔗 *URL:* ${url}
-    
-                *Resultado:*
-                ══════════════    
-                🔴 *Malicioso:* ${maliciousRate}
-                
-                🟡 *Suspeito:* ${suspicious}
-                
-                🔵 *Inofensivo:* ${harmless}               
-                ══════════════
-                
-                📌 Fique atento aos golpes na Internet!
-                `, { parse_mode: 'Markdown' });
-
 })
 
 /**
@@ -152,11 +106,74 @@ bot.action('data', async (content) => {
 })
 
 /**
+ * Busca VirusTotal
+ */
+
+bot.action('new', async (content, next) => {
+    stopEaring = false;
+    content.reply('🔍 Digite a URL ...')
+    next()
+    bot.on(message('text'), async (content) => {
+        if (!stopEaring) {
+            const inputUser = content.message.text;
+
+            const encodedParams = new URLSearchParams();
+            encodedParams.set('url', inputUser);
+
+            // 1st request to VT
+            const idAnalise = await postAnalysisVT(encodedParams)
+
+            // 2nd request to VT
+            let response = await getAnalysisVT(idAnalise);
+
+            const url = response.data.meta.url_info.url;
+            const maliciousRate = response.data.data.attributes.stats.malicious;
+            const suspicious = response.data.data.attributes.stats.suspicious;
+            const harmless = response.data.data.attributes.stats.harmless;
+
+            const sendToDB = {
+                "url": url,
+                "analysisStatus": "Completed",
+                "maliciousRate": maliciousRate,
+                "suspiciousRate": suspicious,
+                "harmlessRate": harmless
+            }
+
+            // save to DB
+            await postFromBot(sendToDB);
+
+            content.reply(`
+                *Resultado da busca*
+
+                🔗 *URL:* ${url}
+    
+                *Resultado:*
+                ══════════════    
+                🔴 *Malicioso:* ${maliciousRate}
+                
+                🟡 *Suspeito:* ${suspicious}
+                
+                🔵 *Inofensivo:* ${harmless}               
+                ══════════════
+                
+                📌 Fique atento aos golpes na Internet!
+                `, {
+                parse_mode: 'Markdown'
+            });
+            content.reply('Voltar ao menu principal 🏡', Markup.inlineKeyboard(startMenu()))
+            stopEaring = true;
+        }
+    });
+})
+
+
+/**
  * Help FAQ
  */
 
 bot.action('help', (content) => {
-    content.reply(helpMessage, Markup.inlineKeyboard(docButton()))
+    content.reply(helpMessage, { parse_mode: 'Markdown' })
+    content.reply('Saiba mais em nossa documentação:', Markup.inlineKeyboard(docButton()))
 })
 
 /**

@@ -32,7 +32,6 @@ async function getAll(req, res) {
 async function getDataBaseURL(req, res) {
     var data;
     var url = req.query.url
-    console.log("URL informada", url)
     try {
         if (!url) {
             return res.status(200).send("Informe uma URL")
@@ -105,14 +104,20 @@ async function getLatestHour(req, res) {
 
 async function postURL(req, res, next) {
     console.log(req.body);
-    try {
-        let novaUrl = new datadb(req.body);
-        novaUrl.save()
-            .then(res.status(201).send(novaUrl.toJSON()))
+    const data = await datadb.find({ url: req.body.url });
+    if (data.length === 0) {
+        try {
+            let novaUrl = new datadb(req.body);
+            novaUrl.save()
+                .then(res.status(201).send(novaUrl.toJSON()))
+            next();
+        } catch (err) {
+            console.log(err);
+            res.status(500).send({ message: err.message })
+        }
+    } else {
+        res.status(404).send({ message: "URL já cadastrada!" });
         next();
-    } catch (err) {
-        console.log(err);
-        res.status(500).send({ message: err.message })
     }
 }
 

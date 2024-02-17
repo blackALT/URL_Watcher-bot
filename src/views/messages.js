@@ -19,14 +19,40 @@ OU
  `
 
 const helpMessage = `
-AJUDA
  
-📌 Como usar este bot?
+📌 *Como usar este bot?*
 
-/start inicia uma 
+/start inicia uma *nova conversa* com o bot apresentando o Menu principal
 
-Como interpretar os resultados
- 
+
+📌 *Opções do Menu principal:*
+
+🔍 *Buscar* - Busca por uma URL no DB
+
+🎣 *Nova Analise* - Caso a URL _não seja encontrada_ com a opção anterior, use esta opção para realizar uma *nova análise*. 
+
+*OBS:* _*Esta opção consome recursos de APIs externas e pode demorar até 15 minutos para ter um resultado conclusivo.*_
+
+📢 *Dicas* - Dicas diversas sobre cibersegurança.
+
+🔗 *Web API* - Acesse os recursos da API web.
+
+📈 *Dados* - Veja estatísticas de uso do chatbot.
+
+
+📌 *Como interpretar os resultados?*
+
+Os campos exibidos são os atributos da resposta da análise submetida à API do VirusTotal e representam 
+o número de mecanismos de *Antivírus* que julgaram a URL como maliciosa, suspeita ou inofensiva.
+
+📌 *Estrutura da API*
+
+Acesso aos endpoints web:
+
+*api/v3/search?url=$* - Busca por URL específica
+*api/v3/* - retorna todas as URLs cadastradas
+*api/v3/latestday* - retorna todas as URLs cadastradas no último dia
+*api/v3/latesthour* - retorna todas as URLs cadastradas na última hora
  `
 
 const contactMessage = `
