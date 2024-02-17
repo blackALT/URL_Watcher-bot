@@ -18,11 +18,9 @@ Este trabalho propõe a criação de um chatbot para verificação de URLs compa
 ## Tecnologias utilizadas
 
 - **Node.js**
-- **npm**
 - **MongoDB**
 - **Telegram API**
 - **Telegraf**
-- **Cuckoo Sandbox**
 - **Virus Total**
 
 ## Dependencias:
@@ -88,19 +86,22 @@ npm start (use o nodemon se preferir)
 
 ## Rotas disponíveis via web
 
-### Endpoints
+```
+api/v3/search?url=$ - Busca por URL específica
+```
+
+```
+api/v3/ - retorna todas as URLs cadastradas
+```
 
 #### Obter urls cadastradas (filtro por período)
 
 ```
-router.get("/urls", controller.getURL);
+api/v3/latestday - retorna todas as URLs cadastradas no último dia
 ```
 
-#### Cadastrar urls (Solicite uma chave JWT ao desenvolvedor do projeto @blackALT)
-
-Apenas via Postman
 ```
-router.post("/urls", controller.postURLweb);
+api/v3/latesthour - retorna todas as URLs cadastradas na última hora
 ```
 
 #### Acesso ao Elasticsearch/Kibana (Avançado)
