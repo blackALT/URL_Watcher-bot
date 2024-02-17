@@ -7,7 +7,6 @@ const toAnalysis = process.env.VT_ANALYSES
 const toURLs = process.env.VT_URLS
 
 const postAnalysisVT = async (encodedParams) => {
-    console.log("Estou em POST com o id", encodedParams)
     const analises = {
         method: 'POST',
         url: toURLs,
@@ -29,7 +28,6 @@ const postAnalysisVT = async (encodedParams) => {
 }
 
 const getAnalysisVT = async (idAnalise) => {
-    console.log("Estou em Get com o id", idAnalise)
     const analises = {
         method: 'GET',
         url: toAnalysis + idAnalise,
@@ -64,10 +62,8 @@ const getDataBaseURL = async (url) => {
 }
 
 const postFromBot = async (sendToDB) => {
-    console.log(sendToDB.url);
     let url = sendToDB.url
     let data = await datadb.find({ url });
-    console.log("Retorno de dada", data);
 
     if (data.length === 0) {
         try {
